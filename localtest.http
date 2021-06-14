@@ -1,0 +1,20 @@
+GET http://localhost:7071/api/GetProducts/triggers/manual/invoke?api-version=2020-05-01-preview&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=p1TMvxrRo6_x4m_dXnJpgPeFb6bkuReoYtttnX-Fu10
+
+
+###
+
+GET http://localhost:7071/api/GetUsers/triggers/manual/invoke?api-version=2020-05-01-preview&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=8YoPCaAVDO9h5W9v30y0mUpVscisaiCTnDrx74wd7Og
+
+###
+
+POST http://localhost:7071/api/OrderProduct/triggers/manual/invoke?api-version=2020-05-01-preview&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=LNvckcMQhx2OgIETpMej3o862fNTKC6vYNP7Zz2iKKY
+Content-Type: application/json
+
+{
+    "userId": "1",
+    "productId": "3",
+    "email": "j.paarhuis@rubicon.nl"
+}
+
+###
+

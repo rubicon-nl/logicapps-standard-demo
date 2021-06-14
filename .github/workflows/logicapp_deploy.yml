@@ -52,7 +52,10 @@ jobs:
         cp 'host.json' 'output/'
         cp 'proxies.json' 'output/'
         cp 'connections.json' 'output/'
-        cp -r 'starterworkflow' 'output/'
+        cp -r 'GetProducts' 'output/'
+        cp -r 'GetUsers' 'output/'
+        cp -r 'OrderProduct' 'output/'
+        cp -r 'OrderProductOrchestrator' 'output/'
 
     - name: Easy Zip Files
       uses: vimtor/action-zip@v1

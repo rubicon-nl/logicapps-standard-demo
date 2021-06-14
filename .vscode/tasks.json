@@ -22,7 +22,7 @@
     {
       "id": "getDebugSymbolDll",
       "type": "command",
-      "command": "azureLogicAppsV2.getDebugSymbolDll"
+      "command": "azureLogicAppsStandard.getDebugSymbolDll"
     }
   ]
 }

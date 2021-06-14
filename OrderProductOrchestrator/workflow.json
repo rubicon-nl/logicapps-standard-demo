@@ -1,0 +1,300 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "For_each_Message": {
+                "type": "Foreach",
+                "foreach": "@triggerOutputs()?['body']",
+                "actions": {
+                    "Queue_Message": {
+                        "type": "ParseJson",
+                        "inputs": {
+                            "content": "@item()?['contentData']",
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "ProductId": {
+                                        "type": "string"
+                                    },
+                                    "UserId": {
+                                        "type": "string"
+                                    },
+                                    "Email": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        },
+                        "runAfter": {}
+                    },
+                    "User": {
+                        "type": "ParseJson",
+                        "inputs": {
+                            "content": "@body('Get_User')?['value'][0]",
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "id": {
+                                        "type": "string"
+                                    },
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "balance": {
+                                        "type": "integer"
+                                    }
+                                }
+                            }
+                        },
+                        "runAfter": {
+                            "Get_User": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Is_in_stock": {
+                        "type": "If",
+                        "expression": {
+                            "and": [
+                                {
+                                    "greaterOrEquals": [
+                                        "@body('Product')?['inStock']",
+                                        1
+                                    ]
+                                }
+                            ]
+                        },
+                        "actions": {
+                            "User_has_sufficient_balance": {
+                                "type": "If",
+                                "expression": {
+                                    "and": [
+                                        {
+                                            "less": [
+                                                "@body('Product')?['price']",
+                                                "@body('User')?['balance']"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "actions": {
+                                    "Send_completed_order_email": {
+                                        "type": "ApiConnection",
+                                        "inputs": {
+                                            "host": {
+                                                "connection": {
+                                                    "referenceName": "office365"
+                                                }
+                                            },
+                                            "method": "post",
+                                            "body": {
+                                                "To": "@body('Queue_Message')?['Email']",
+                                                "Subject": "Order completed",
+                                                "Body": "<p>Your order is completed. The @{body('Product')?['name']} is shipped.</p>"
+                                            },
+                                            "path": "/v2/Mail"
+                                        },
+                                        "runAfter": {
+                                            "Reduce_balance_from_user": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    },
+                                    "Reduce_stock_for_product": {
+                                        "type": "ApiConnection",
+                                        "inputs": {
+                                            "host": {
+                                                "connection": {
+                                                    "referenceName": "documentdb"
+                                                }
+                                            },
+                                            "method": "post",
+                                            "body": {
+                                                "id": "@body('Product')?['id']",
+                                                "type": "@body('Product')?['type']",
+                                                "name": "@body('Product')?['name']",
+                                                "price": "@body('Product')?['price']",
+                                                "inStock": "@sub(body('Product')?['inStock'], 1)"
+                                            },
+                                            "headers": {
+                                                "x-ms-documentdb-is-upsert": true
+                                            },
+                                            "path": "/v3/dbs/@{encodeURIComponent('Shop')}/colls/@{encodeURIComponent('Products')}/docs"
+                                        },
+                                        "runAfter": {}
+                                    },
+                                    "Reduce_balance_from_user": {
+                                        "type": "ApiConnection",
+                                        "inputs": {
+                                            "host": {
+                                                "connection": {
+                                                    "referenceName": "documentdb"
+                                                }
+                                            },
+                                            "method": "post",
+                                            "body": {
+                                                "id": "@body('User')?['id']",
+                                                "name": "@body('User')?['name']",
+                                                "balance": "@sub(body('User')?['balance'], body('Product')?['price'])"
+                                            },
+                                            "headers": {
+                                                "x-ms-documentdb-is-upsert": true
+                                            },
+                                            "path": "/v3/dbs/@{encodeURIComponent('Shop')}/colls/@{encodeURIComponent('Users')}/docs"
+                                        },
+                                        "runAfter": {
+                                            "Reduce_stock_for_product": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    }
+                                },
+                                "runAfter": {},
+                                "else": {
+                                    "actions": {
+                                        "Send_insufficient_balance_email": {
+                                            "type": "ApiConnection",
+                                            "inputs": {
+                                                "host": {
+                                                    "connection": {
+                                                        "referenceName": "office365"
+                                                    }
+                                                },
+                                                "method": "post",
+                                                "body": {
+                                                    "To": "@body('Queue_Message')?['Email']",
+                                                    "Subject": "Insufficient balance",
+                                                    "Body": "<p>Sorry, couldn't finish the order because of insufficient balance.</p>"
+                                                },
+                                                "path": "/v2/Mail"
+                                            },
+                                            "runAfter": {}
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "runAfter": {
+                            "User": [
+                                "Succeeded"
+                            ]
+                        },
+                        "else": {
+                            "actions": {
+                                "Send_not_in_stock_email": {
+                                    "type": "ApiConnection",
+                                    "inputs": {
+                                        "host": {
+                                            "connection": {
+                                                "referenceName": "office365"
+                                            }
+                                        },
+                                        "method": "post",
+                                        "body": {
+                                            "To": "@body('Queue_Message')?['Email']",
+                                            "Subject": "Product out of stock",
+                                            "Body": "<p>Sorry, but the @{body('Product')?['name']} is out of stock.<br>\n<br>\nYour order can't be completed.</p>"
+                                        },
+                                        "path": "/v2/Mail"
+                                    },
+                                    "runAfter": {}
+                                }
+                            }
+                        }
+                    },
+                    "Get_Product": {
+                        "type": "ApiConnection",
+                        "inputs": {
+                            "host": {
+                                "connection": {
+                                    "referenceName": "documentdb"
+                                }
+                            },
+                            "method": "get",
+                            "path": "/v4/dbs/@{encodeURIComponent('Shop')}/colls/@{encodeURIComponent('Products')}/query",
+                            "queries": {
+                                "partitionKey": "@body('Queue_Message')?['ProductId']"
+                            }
+                        },
+                        "runAfter": {
+                            "Queue_Message": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Product": {
+                        "type": "ParseJson",
+                        "inputs": {
+                            "content": "@body('Get_Product')?['value'][0]",
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "id": {
+                                        "type": "string"
+                                    },
+                                    "type": {
+                                        "type": "string"
+                                    },
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "price": {
+                                        "type": "integer"
+                                    },
+                                    "inStock": {
+                                        "type": "integer"
+                                    }
+                                }
+                            }
+                        },
+                        "runAfter": {
+                            "Get_Product": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Get_User": {
+                        "type": "ApiConnection",
+                        "inputs": {
+                            "host": {
+                                "connection": {
+                                    "referenceName": "documentdb"
+                                }
+                            },
+                            "method": "get",
+                            "path": "/v4/dbs/@{encodeURIComponent('Shop')}/colls/@{encodeURIComponent('Users')}/query",
+                            "queries": {
+                                "partitionKey": "@body('Queue_Message')?['UserId']"
+                            }
+                        },
+                        "runAfter": {
+                            "Product": [
+                                "Succeeded"
+                            ]
+                        }
+                    }
+                },
+                "runAfter": {}
+            }
+        },
+        "triggers": {
+            "When_messages_are_available_in_Service_Bus_queue": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "queueName": "order-product",
+                        "isSessionsEnabled": false
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "serviceBus",
+                        "operationId": "receiveQueueMessages",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                }
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {}
+    },
+    "kind": "Stateful"
+}
