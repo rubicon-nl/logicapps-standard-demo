@@ -3,22 +3,22 @@
     "contentVersion": "1.0.0.0",
     "parameters": { 
         "location": {
-            "value": "Australia Southeast"
+            "value": "Europe West"
         },
         "environmentName": {
-            "value": "env-name"
+            "value": "logicappsdemo"
         },
         "projectName": {
-            "value": "project-name"
+            "value": "logicappsdemo"
         },
         "logicAppName": {
-            "value": "la-name"
+            "value": "rub-la-logicappsdemo"
         },
         "appServicePlanName": {
-            "value": "asp-name"
+            "value": "rub-plan-logicappsdemo"
         },
         "storageName": {
-            "value": "storage-name"
+            "value": "rubstlogicappsdemo"
         },
         "kind": {
             "value": "StorageV2"

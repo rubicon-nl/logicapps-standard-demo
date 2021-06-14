@@ -4,3 +4,4 @@ appsettings.json
 local.settings.json
 workflow-designtime/
 connections.json
+__azurite*.json

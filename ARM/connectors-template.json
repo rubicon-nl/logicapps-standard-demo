@@ -25,7 +25,7 @@
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2020-08-01-preview",
             "name": "[variables('sa')]",
-            "location": "australiasoutheast",
+            "location": "europewest",
             "sku": {
                 "name": "Standard_LRS",
                 "tier": "Standard"
@@ -58,7 +58,7 @@
             "type": "Microsoft.Web/connections",
             "apiVersion": "2016-06-01",
             "name": "[parameters('connections_azureblob_name')]",
-            "location": "australiasoutheast",
+            "location": "europewest",
             "kind": "V2",            
             "dependsOn": [
                 "[resourceId('Microsoft.Storage/storageAccounts', variables('sa'))]"
@@ -78,7 +78,7 @@
             "type": "Microsoft.Web/connections/accessPolicies",
             "apiVersion": "2016-06-01",
             "name": "[concat(parameters('connections_azureblob_name'),'/',parameters('logicAppSystemAssignedIdentityObjectId'))]",
-            "location": "australiasoutheast",
+            "location": "europewest",
             "dependsOn": [
                 "[resourceId('Microsoft.Web/connections', parameters('connections_azureblob_name'))]"
             ],
