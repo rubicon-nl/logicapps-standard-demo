@@ -1,0 +1,6 @@
+bin
+obj
+appsettings.json
+local.settings.json
+workflow-designtime/
+connections.json
