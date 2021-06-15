@@ -1,0 +1,67 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Response": {
+                "type": "Response",
+                "kind": "http",
+                "inputs": {
+                    "statusCode": 202,
+                    "body": "Order in behandeling"
+                },
+                "runAfter": {
+                    "Send_Message": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Send_Message": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "entityName": "order-product",
+                        "message": {
+                            "contentData": {
+                                "ProductId": "@triggerBody()?['productId']",
+                                "UserId": "@triggerBody()?['userId']",
+                                "Email": "@triggerBody()?['email']"
+                            }
+                        }
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "serviceBus",
+                        "operationId": "sendMessage",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "runAfter": {}
+            }
+        },
+        "triggers": {
+            "manual": {
+                "type": "Request",
+                "kind": "Http",
+                "inputs": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "userId": {
+                                "type": "string"
+                            },
+                            "productId": {
+                                "type": "string"
+                            },
+                            "email": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "method": "POST"
+                }
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {}
+    },
+    "kind": "Stateful"
+}
