@@ -7,7 +7,6 @@ env:
   AZURE_LOGICAPP_PACKAGE_PATH: '.'
   DOTNET_VERSION: '3.1.301'    # set this to the dotnet version to use
   RG_LA: 'rub-sg-logicappsdemo'
-  RG_CON: 'rub-sg-logicappsdemo'
   LA_NAME: 'rub-la-logicappsdemo'
 
 on:
@@ -31,7 +30,7 @@ jobs:
       uses: azure/powershell@v1
       with:
         inlineScript: |
-          ./Scripts/Generate-Connections.ps1 -resourceGroup '${{ env.RG_CON }}'
+          ./Scripts/Generate-Connections.ps1 -resourceGroup '${{ env.RG_LA }}'
         azPSVersion: latest
 
     - name: Get publish Profile
