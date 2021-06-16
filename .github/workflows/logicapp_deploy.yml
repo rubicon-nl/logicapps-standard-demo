@@ -54,7 +54,6 @@ jobs:
         cp -r 'GetProducts' 'output/'
         cp -r 'GetUsers' 'output/'
         cp -r 'OrderProductOrchestrator' 'output/'
-        cp -r 'OrderProduct' 'output/'
 
     - name: Easy Zip Files
       uses: vimtor/action-zip@v1
