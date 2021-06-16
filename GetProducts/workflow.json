@@ -2,7 +2,7 @@
     "definition": {
         "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
         "actions": {
-            "Get_all_documents_V2": {
+            "Get_Products": {
                 "type": "ApiConnection",
                 "inputs": {
                     "host": {
@@ -20,32 +20,10 @@
                 "kind": "http",
                 "inputs": {
                     "statusCode": 200,
-                    "body": "@body('Get_all_documents_V2')?['value']"
+                    "body": "@body('Get_Products')?['value']"
                 },
                 "runAfter": {
-                    "Send_an_email_(V2)": [
-                        "Succeeded"
-                    ]
-                }
-            },
-            "Send_an_email_(V2)": {
-                "type": "ApiConnection",
-                "inputs": {
-                    "host": {
-                        "connection": {
-                            "referenceName": "office365"
-                        }
-                    },
-                    "method": "post",
-                    "body": {
-                        "To": "j.paarhuis@rubicon.nl",
-                        "Subject": "test",
-                        "Body": "<p>test</p>"
-                    },
-                    "path": "/v2/Mail"
-                },
-                "runAfter": {
-                    "Get_all_documents_V2": [
+                    "Get_Products": [
                         "Succeeded"
                     ]
                 }

@@ -2,7 +2,7 @@
     "definition": {
         "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
         "actions": {
-            "Get_all_documents_V2": {
+            "Get_Users": {
                 "type": "ApiConnection",
                 "inputs": {
                     "host": {
@@ -20,10 +20,10 @@
                 "kind": "http",
                 "inputs": {
                     "statusCode": 200,
-                    "body": "@body('Get_all_documents_V2')?['value']"
+                    "body": "@body('Get_Users')?['value']"
                 },
                 "runAfter": {
-                    "Get_all_documents_V2": [
+                    "Get_Users": [
                         "Succeeded"
                     ]
                 }
