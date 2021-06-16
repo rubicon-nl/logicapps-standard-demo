@@ -286,7 +286,7 @@
                         "isSessionsEnabled": false
                     },
                     "serviceProviderConfiguration": {
-                        "connectionName": "serviceBus",
+                        "connectionName": "serviceBusSp",
                         "operationId": "receiveQueueMessages",
                         "serviceProviderId": "/serviceProviders/serviceBus"
                     }

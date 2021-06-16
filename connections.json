@@ -27,24 +27,10 @@
         "scheme": "Key",
         "parameter": "@appsetting('office365-connectionKey')"
       }
-    },
-    "servicebus_1": {
-      "api": {
-        "id": "/subscriptions/4070ead3-93da-4348-a676-ac7caad606ed/providers/Microsoft.Web/locations/westeurope/managedApis/servicebus"
-      },
-      "connection": {
-        "id": "/subscriptions/4070ead3-93da-4348-a676-ac7caad606ed/resourceGroups/rub-sg-logicappsdemo/providers/Microsoft.Web/connections/servicebus"
-      },
-      "connectionRuntimeUrl": "https://0a3d37f2d48e6dc7.10.common.logic-westeurope.azure-apihub.net/apim/servicebus/2759b99b0b1347cb956e6b5855101adf/",
-      "authentication": {
-        "type": "Raw",
-        "scheme": "Key",
-        "parameter": "@appsetting('servicebus_1-connectionKey')"
-      }
     }
   },
   "serviceProviderConnections": {
-    "serviceBus": {
+    "serviceBusSp": {
       "parameterValues": {
         "connectionString": "@appsetting('serviceBus_connectionString')"
       },
