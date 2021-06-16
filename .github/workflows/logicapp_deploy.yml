@@ -53,6 +53,7 @@ jobs:
         cp 'connections.json' 'output/'
         cp -r 'GetProducts' 'output/'
         cp -r 'GetUsers' 'output/'
+        cp -r 'OrderProduct' 'output/'
         cp -r 'OrderProductOrchestrator' 'output/'
 
     - name: Easy Zip Files
